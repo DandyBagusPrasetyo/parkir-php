@@ -1,8 +1,28 @@
+<?php
+ require_once 'koneksi.php';
+
+ // Handle delete request
+ if (isset($_GET['delete'])) {
+     $id = $_GET['delete'];
+     $sql = "DELETE FROM members WHERE id = ?";
+     $stmt = $konek->prepare($sql);
+     $stmt->bind_param("i", $id);
+     $stmt->execute();
+     $stmt->close();
+     header("Location: index.php?page=members");
+     exit();
+ }
+
+ // Fetch members data
+ $sql = "SELECT id, name, address, vehicle_type, vehicle_model, vehicle_color, vehicle_number, card_code FROM members";
+ $result = $konek->query($sql);
+ ?>
+
 <div>
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Member Data</h6>
+        <a href="index.php?page=add_member" class="btn btn-primary">Add Member</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -21,31 +41,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        require_once 'koneksi.php';
-
-                        $query = "SELECT id, name, address, vehicle_type, vehicle_model, vehicle_color, vehicle_number, card_code FROM members";
-                        $result = $konek->query($query);
-
-                        if ($result->num_rows > 0) {
-                            while($row = $result->fetch_assoc()) {
-                                echo "<tr>";
-                                echo "<td>" . $row["id"]. "</td>";
-                                echo "<td>" . $row["name"]. "</td>";
-                                echo "<td>" . $row["address"]. "</td>";
-                                echo "<td>" . $row["vehicle_type"]. "</td>";
-                                echo "<td>" . $row["vehicle_model"]. "</td>";
-                                echo "<td>" . $row["vehicle_color"]. "</td>";
-                                echo "<td>" . $row["vehicle_number"]. "</td>";
-                                echo "<td>" . $row["card_code"]. "</td>";
-                                echo "<td> action </td>";
-                                echo "</tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='8'>No data found</td></tr>";
-                        }
-                        $konek->close();
-                        ?>
+                        <?php while($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo $row['id']; ?></td>
+                            <td><?php echo $row['name']; ?></td>
+                            <td><?php echo $row['address']; ?></td>
+                            <td><?php echo $row['vehicle_type']; ?></td>
+                            <td><?php echo $row['vehicle_model']; ?></td>
+                            <td><?php echo $row['vehicle_color']; ?></td>
+                            <td><?php echo $row['vehicle_number']; ?></td>
+                            <td><?php echo $row['card_code']; ?></td>
+                            <td>
+                                <a href="index.php?page=edit_member&id=<?php echo $row['id']; ?>" class="btn btn-primary btn-sm">Edit</a>
+                                <a href="members.php?delete=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this member?');">Delete</a>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
                     </tbody>
                 </table>
             </div>
