@@ -6,8 +6,10 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 
+$session_id = $_SESSION['id'];
+
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
-$allowed_pages = ['dashboard', 'users', 'add_user', 'edit_user', 'members', 'transactions', 'spots'];
+$allowed_pages = ['dashboard', 'users', 'add_user', 'edit_user', 'members', 'add_member', 'edit_member', 'transactions', 'spots'];
 
 $page = explode('&', $page)[0];
 if (in_array($page, $allowed_pages)) {
@@ -29,7 +31,7 @@ if (in_array($page, $allowed_pages)) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Blank</title>
+    <title>Parkir XYZ</title>
 
     <!-- Custom fonts for this template-->
     <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -56,7 +58,7 @@ if (in_array($page, $allowed_pages)) {
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3">Parkir <sup>xyz</sup></div>
             </a>
 
             <!-- Divider -->
@@ -347,7 +349,7 @@ if (in_array($page, $allowed_pages)) {
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+                        <span>Copyright &copy; Dandy Bagus Prasetyo | 202143500359 | Zoinix.COM</span>
                     </div>
                 </div>
             </footer>
