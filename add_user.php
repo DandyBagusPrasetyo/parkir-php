@@ -24,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <div>
-    <!-- Add User Form -->
     <div class="row">
         <div class="col-lg-6">
             <div class="card shadow mb-4">

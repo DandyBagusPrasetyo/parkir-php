@@ -1,7 +1,6 @@
 <?php
 require_once 'koneksi.php';
 
-// Handle delete request
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $sql = "DELETE FROM users WHERE id = ?";
@@ -13,7 +12,6 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// Fetch users data
 $sql = "SELECT id, name, email, phone, role FROM users";
 $result = $konek->query($sql);
 ?>

@@ -21,7 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $member_id = $member['id'];
             $vehicle_number = $member['vehicle_number'];
 
-            // Fetch the last transaction of the member
             $sql = "SELECT * FROM transactions WHERE member_id = ? ORDER BY id DESC LIMIT 1";
             $stmt = $konek->prepare($sql);
             $stmt->bind_param("i", $member_id);
@@ -31,21 +30,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $status = 'IN';
             if ($last_transaction) {
-                // Determine the new status based on the last transaction's status
                 if ($last_transaction['status'] == 'IN') {
                     $status = 'OUT';
                 }
             }
 
-            $user_id = $session_id;
             $date = date("Y-m-d");
             $time = date("H:i:s");
-            $payment = 'Cash'; // Assume payment method 'Cash', you can change it accordingly
-            $price = 0; // Set price to 0 for now, you can update it as per your pricing logic
+            $payment = 'Cash';
+            $price = 0;
 
             $sql = "INSERT INTO transactions (member_id, user_id, vehicle_number, date, time, status, payment, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $konek->prepare($sql);
-            $stmt->bind_param("iissssss", $member_id, $user_id, $vehicle_number, $date, $time, $status, $payment, $price);
+            $stmt->bind_param("iissssss", $member_id, $session_id, $vehicle_number, $date, $time, $status, $payment, $price);
 
             if ($stmt->execute()) {
                 if($status == 'IN') {
@@ -67,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $date_out = date("Y-m-d");
         $time_out = date("H:i:s");
 
-        // Find the transaction with the given ticket number and status IN
         $sql = "SELECT * FROM transactions WHERE ticket_number = ? AND status = 'IN'";
         $stmt = $konek->prepare($sql);
         $stmt->bind_param("i", $ticket_number);
@@ -80,35 +76,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $time_in = $transaction['time'];
             $price_per_hour = $transaction['price'];
 
-            // Calculate parking duration in hours
             $datetime_in = new DateTime("$date_in $time_in");
             $datetime_out = new DateTime("$date_out $time_out");
             $interval = $datetime_in->diff($datetime_out);
             $hours = $interval->h + ($interval->days * 24);
             if ($interval->i > 0 || $interval->s > 0) {
-                $hours += 1; // Round up to the next hour if there are minutes or seconds
+                $hours += 1;
             }
 
-            // Calculate parking fee
             $total_price = $hours * $price_per_hour;
 
-            // Insert new transaction with status OUT
-            $sql_insert = "INSERT INTO transactions (ticket_number, member_id, user_id, vehicle_number, date, time, status, payment, price) VALUES (?, ?, ?, ?, ?, ?, 'OUT', 'Paid', ?)";
-            $stmt_insert = $konek->prepare($sql_insert);
-            $stmt_insert->bind_param("iiisssi", $ticket_number, $transaction['member_id'], $transaction['user_id'], $transaction['vehicle_number'], $date_out, $time_out, $total_price);
+            $sql = "UPDATE transactions SET status = 'OUT', date = ?, time = ?, price = ? WHERE ticket_number = ? AND status = 'IN'";
+            $stmt = $konek->prepare($sql);
+            $stmt->bind_param("ssii", $date_out, $time_out, $total_price, $ticket_number);
 
-            if ($stmt_insert->execute()) {
-                $notification_checkout = "<span style='color: green'>Ticket No: $ticket_number, Status: OUT, Total Price: Rp $total_price ($hours jam)";
+            if ($stmt->execute()) {
+                $notification_checkout = "<span style='color: green'>Ticket No: $ticket_number, Status: OUT, Total Price: Rp $total_price ($hours jam)</span>";
             } else {
-                $notification_checkout = "Error inserting transaction: " . $stmt_insert->error;
+                $notification_checkout = "Error updating transaction: " . $stmt->error;
             }
 
-            $stmt_insert->close();
+            $stmt->close();
         } else {
             $notification_checkout = "Transaction with Ticket No: $ticket_number not found or already checked out.";
         }
 
-        $stmt->close();
         $konek->close();
     } else {
         $vehicle_number = isset($_POST['vehicle_number']) ? $_POST['vehicle_number'] : null;
@@ -118,24 +110,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $status = 'IN';
         $payment = 'Cash';
 
-        // Set price based on vehicle type
         $price = ($vehicle_type == 'Sepeda Motor') ? 3000 : 5000;
 
-        // Insert new transaction
-        $user_id = 1; // Assume user_id 1 for simplicity, you can change it based on the logged-in user
         $sql = "INSERT INTO transactions (vehicle_number, date, time, status, payment, price, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $konek->prepare($sql);
-        $stmt->bind_param("sssssii", $vehicle_number, $date, $time, $status, $payment, $price, $user_id);
+        $stmt->bind_param("sssssii", $vehicle_number, $date, $time, $status, $payment, $price, $session_id);
 
         if ($stmt->execute()) {
-            // Get the ID of the newly inserted transaction
             $transaction_id = $stmt->insert_id;
 
-            // Generate the ticket number
             $time_parts = explode(":", date("H:i:s"));
             $ticket_number = $transaction_id . implode('', $time_parts);
 
-            // Update the transaction with the ticket number
             $sql_update = "UPDATE transactions SET ticket_number = ? WHERE id = ?";
             $stmt_update = $konek->prepare($sql_update);
             $stmt_update->bind_param("ii", $ticket_number, $transaction_id);
@@ -221,7 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="card-body">
                     <form action="index.php?page=dashboard" method="POST">
                         <div class="form-group">
-                            <label for="ticket_number">Ticket Number</label>
+                            <label for="ticket_number">Ticket No</label>
                             <input type="text" class="form-control" id="ticket_number" name="ticket_number" required>
                         </div>
                         <div class="form-group">

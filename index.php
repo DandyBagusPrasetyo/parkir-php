@@ -9,7 +9,7 @@ if (!isset($_SESSION['email'])) {
 $session_id = $_SESSION['id'];
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
-$allowed_pages = ['dashboard', 'users', 'add_user', 'edit_user', 'members', 'add_member', 'edit_member', 'transactions', 'spots'];
+$allowed_pages = ['dashboard', 'reports', 'users', 'add_user', 'edit_user', 'members', 'add_member', 'edit_member', 'transactions', 'ticket_checkin'];
 
 $page = explode('&', $page)[0];
 if (in_array($page, $allowed_pages)) {
@@ -70,6 +70,11 @@ if (in_array($page, $allowed_pages)) {
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="index.php?page=reports">
+                    <i class="fas fa-fw fa-file"></i>
+                    <span>Reports</span></a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -94,18 +99,17 @@ if (in_array($page, $allowed_pages)) {
                     </div>
                 </div>
             </li>
+            <!-- Nav Item - Tables -->
+            <li class="nav-item">
+                <a class="nav-link" href="index.php?page=ticket_checkin">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Ticket Check IN</span></a>
+            </li>
             <!-- Nav Item - Charts -->
             <li class="nav-item">
                 <a class="nav-link" href="index.php?page=transactions">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Transactions</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="index.php?page=spots">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Parking Spots</span></a>
             </li>
 
             <!-- Divider -->

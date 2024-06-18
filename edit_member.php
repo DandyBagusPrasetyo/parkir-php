@@ -6,11 +6,9 @@ function generateCardCode($vehicle_type, $vehicle_number) {
     return $prefix . '-' . $vehicle_number;
 }
 
-// Check if ID is provided
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch member data
     $sql = "SELECT * FROM members WHERE id = ?";
     $stmt = $konek->prepare($sql);
     $stmt->bind_param("i", $id);
@@ -32,7 +30,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $vehicle_number = $_POST['vehicle_number'];
         $card_code = generateCardCode($vehicle_type, $vehicle_number);
 
-        // Update query
         $sql = "UPDATE members SET name = ?, phone = ?, address = ?, vehicle_type = ?, vehicle_model = ?, vehicle_color = ?, vehicle_number = ?, card_code = ? WHERE id = ?";
         $stmt = $konek->prepare($sql);
         $stmt->bind_param("ssssssssi", $name, $phone, $address, $vehicle_type, $vehicle_model, $vehicle_color, $vehicle_number, $card_code, $id);
