@@ -1,27 +1,34 @@
 <?php
 require_once 'koneksi.php';
 
-$sql = "SELECT transactions.*, members.card_code, users.name AS user_name
-        FROM transactions
-        LEFT JOIN members ON transactions.member_id = members.id
-        LEFT JOIN users ON transactions.user_id = users.id";
+$sql = "SELECT t.*, u.name AS user_name
+        FROM transactions t
+        LEFT JOIN users u ON t.user_id = u.id
+        WHERE t.ticket_number IS NOT NULL
+        AND t.status = 'IN'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM transactions t2
+            WHERE t2.ticket_number = t.ticket_number
+            AND t2.status = 'OUT'
+        )";
 $result = $konek->query($sql);
+$no = 1;
 ?>
 
 <div>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Transactions Logs</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Vehicle List With Ticket</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="usersTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Ticket No</th>
-                            <th>Member Code</th>
                             <th>Vehicle No</th>
                             <th>Date / Time</th>
                             <th>Price</th>
@@ -32,9 +39,8 @@ $result = $konek->query($sql);
                     <tbody>
                         <?php while($row = $result->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo $row['id']; ?></td>
+                            <td><?php echo $no++; ?></td>
                             <td><?php echo $row['ticket_number']; ?></td>
-                            <td><?php echo $row['card_code']; ?></td>
                             <td><?php echo $row['vehicle_number']; ?></td>
                             <td><?php echo $row['date'] ." / ". $row['time']; ?></td>
                             <td><?php echo $row['price']; ?></td>

@@ -1,7 +1,6 @@
 <?php
  require_once 'koneksi.php';
 
- // Handle delete request
  if (isset($_GET['delete'])) {
      $id = $_GET['delete'];
      $sql = "DELETE FROM members WHERE id = ?";
@@ -13,7 +12,6 @@
      exit();
  }
 
- // Fetch members data
  $sql = "SELECT id, name, address, vehicle_type, vehicle_model, vehicle_color, vehicle_number, card_code FROM members";
  $result = $konek->query($sql);
  ?>

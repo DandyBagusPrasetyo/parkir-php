@@ -6,7 +6,6 @@ function generateCardCode($vehicle_type, $vehicle_number) {
     return $prefix . '-' . $vehicle_number;
 }
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $phone = $_POST['phone'];
@@ -35,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <div>
-    <!-- Add User Form -->
     <div class="row">
         <div class="col-lg-6">
             <div class="card shadow mb-4">

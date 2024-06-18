@@ -1,11 +1,9 @@
 <?php
 require_once 'koneksi.php';
 
-// Check if ID is provided
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch user data
     $sql = "SELECT * FROM users WHERE id = ?";
     $stmt = $konek->prepare($sql);
     $stmt->bind_param("i", $id);
@@ -17,14 +15,12 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         die("User not found.");
     }
 
-    // Update user data
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $name = $_POST['name'];
         $email = $_POST['email'];
         $phone = $_POST['phone'];
         $role = $_POST['role'];
 
-        // Update query
         $sql = "UPDATE users SET name = ?, email = ?, phone = ?, role = ? WHERE id = ?";
         $stmt = $konek->prepare($sql);
         $stmt->bind_param("ssssi", $name, $email, $phone, $role, $id);
@@ -44,7 +40,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 }
 ?>
 
-<!-- Edit User Form -->
 <div class="row">
     <div class="col-lg-6">
         <div class="card shadow mb-4">
