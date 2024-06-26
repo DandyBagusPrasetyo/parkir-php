@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $konek->close();
     } elseif ($ticket_number) {
         $vehicle_number = isset($_POST['vehicle_number']) ? $_POST['vehicle_number'] : null;
-        $vehicle_type = isset($_POST['vehicle_type']) ? $_POST['vehicle_type'] : null;
+        //$vehicle_type = isset($_POST['vehicle_type']) ? $_POST['vehicle_type'] : null;
         $date_out = date("Y-m-d");
         $time_out = date("H:i:s");
 
@@ -75,6 +75,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $date_in = $transaction['date'];
             $time_in = $transaction['time'];
             $price_per_hour = $transaction['price'];
+            $vehicle_type = $transaction['vehicle_type'];
+            if(!$vehicle_number) {
+                $vehicle_number = $transaction['vehicle_number'];
+            }
 
             $datetime_in = new DateTime("$date_in $time_in");
             $datetime_out = new DateTime("$date_out $time_out");
@@ -91,7 +95,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ssii", $date_out, $time_out, $total_price, $ticket_number);
 
             if ($stmt->execute()) {
-                $notification_checkout = "<span style='color: green'>Ticket No: $ticket_number, Status: OUT, Total Price: Rp $total_price ($hours jam)</span>";
+                $notification_checkout = "
+                    <h4>Ticket Information</h4>
+                    <table style='width: 100%; color: #fff; background-color: #333; padding: 10px; border-radius: 5px;'>
+                    <tr>
+                        <td><strong>Ticket No:</strong></td>
+                        <td>$ticket_number</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vehicle Type:</strong></td>
+                        <td>$vehicle_type</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vehicle Number:</strong></td>
+                        <td>$vehicle_number</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td style='color: green;'>OUT</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Price:</strong></td>
+                        <td>Rp $total_price</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duration:</strong></td>
+                        <td>$hours jam</td>
+                    </tr>
+                    </table>
+                    <div style='margin-top: 10px; text-align: center;'>
+                    <a href='print_nota.php?ticket_number=$ticket_number&vehicle_number=$vehicle_number&duration=$hours' target='_blank'><button type='submit' class='btn btn-warning'>Print Nota</button></a>
+                    </div>";
+
             } else {
                 $notification_checkout = "Error updating transaction: " . $stmt->error;
             }
@@ -112,9 +147,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $price = ($vehicle_type == 'Sepeda Motor') ? 3000 : 5000;
 
-        $sql = "INSERT INTO transactions (vehicle_number, date, time, status, payment, price, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO transactions (vehicle_type, vehicle_number, date, time, status, payment, price, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $konek->prepare($sql);
-        $stmt->bind_param("sssssii", $vehicle_number, $date, $time, $status, $payment, $price, $session_id);
+        $stmt->bind_param("ssssssii",$vehicle_type, $vehicle_number, $date, $time, $status, $payment, $price, $session_id);
 
         if ($stmt->execute()) {
             $transaction_id = $stmt->insert_id;
@@ -127,7 +162,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_update->bind_param("ii", $ticket_number, $transaction_id);
 
             if ($stmt_update->execute()) {
-                $notification_checkin = "<span style='color: green'>Ticket No: $ticket_number, Type: $vehicle_type, Status: $status";
+                $notification_checkin = "
+                    <h4>Ticket Information</h4>
+                    <table style='width: 100%; color: #fff; background-color: #333; padding: 10px; border-radius: 5px;'>
+                    <tr>
+                        <td><strong>Ticket No:</strong></td>
+                        <td>$ticket_number</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Type:</strong></td>
+                        <td>$vehicle_type</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vehicle Number:</strong></td>
+                        <td>$vehicle_number</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td style='color: green;'>$status</td>
+                    </tr>
+                    </table>";
+
             } else {
                 $notification_checkin = "Error updating ticket number: " . $stmt_update->error;
             }
@@ -143,34 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 <div>
-    <div class="row">
-        <div class="col-lg-4">
-        </div>
-        <div class="col-lg-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Check IN/OUT (Member Card)</h6>
-                    </div>
-                    <div class="card-body">
-                        <form action="index.php?page=dashboard" method="POST">
-                            <div class="form-group">
-                                <label for="card_code">Card Code</label>
-                                <input type="text" class="form-control" id="card_code" name="card_code" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Check IN/OUT</button>
-                        </form>
-                    </div>
-                    <?php if (isset($notification)): ?>
-                    <div class="card-footer">
-                        <p><?php echo $notification; ?></p>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        <div class="col-lg-4">
-        </div>
-    </div>
-    <div class="row">
+<div class="row">
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -183,7 +211,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
                         </div>
                         <div class="form-group">
-                            <label for="vehicle_type">Vehicle type</label>
+                            <label for="vehicle_type">Vehicle Type</label>
                             <select class="form-control" id="vehicle_type" name="vehicle_type" required>
                                 <option value="Sepeda Motor">Sepeda Motor (Rp 3.000/Jam)</option>
                                 <option value="Mobil">Mobil (Rp 5.000/Jam)</option>
@@ -212,7 +240,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="form-group">
                             <label for="vehicle_number">Vehicle Number/Plat Kendaraan (Opsional)</label>
-                            <input type="email" class="form-control" id="vehicle_number" name="vehicle_number">
+                            <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
                         </div>
                         <button type="submit" class="btn btn-primary">Check Out</button>
                     </form>
@@ -223,6 +251,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <?php endif; ?>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+        </div>
+        <div class="col-lg-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Check IN/OUT (Member Card)</h6>
+                    </div>
+                    <div class="card-body">
+                        <form action="index.php?page=dashboard" method="POST">
+                            <div class="form-group">
+                                <label for="card_code">Card Code</label>
+                                <input type="text" class="form-control" id="card_code" name="card_code" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Check IN/OUT</button>
+                        </form>
+                    </div>
+                    <?php if (isset($notification)): ?>
+                    <div class="card-footer">
+                        <p><?php echo $notification; ?></p>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <div class="col-lg-4">
         </div>
     </div>
 </div>
