@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   `ticket_number` int DEFAULT NULL,
   `member_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
+  `vehicle_type` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `vehicle_number` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `date` date DEFAULT NULL,
   `time` time DEFAULT NULL,
@@ -55,14 +56,40 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   KEY `FK_transactions_users` (`user_id`),
   CONSTRAINT `FK_transactions_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`),
   CONSTRAINT `FK_transactions_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table parkir.transactions: ~4 rows (approximately)
-REPLACE INTO `transactions` (`id`, `ticket_number`, `member_id`, `user_id`, `vehicle_number`, `date`, `time`, `status`, `payment`, `price`) VALUES
-	(1, NULL, 1, 1, 'B3012USH', '2024-06-18', '08:48:47', 'IN', 'Cash', 0),
-	(2, NULL, 1, 1, 'B3012USH', '2024-06-18', '08:48:49', 'OUT', 'Cash', 0),
-	(3, 3084857, NULL, 1, '', '2024-06-18', '08:48:57', 'IN', 'Cash', 5000),
-	(4, 4084902, NULL, 1, '', '2024-06-18', '08:49:02', 'IN', 'Cash', 3000);
+-- Dumping data for table parkir.transactions: ~15 rows (approximately)
+REPLACE INTO `transactions` (`id`, `ticket_number`, `member_id`, `user_id`, `vehicle_type`, `vehicle_number`, `date`, `time`, `status`, `payment`, `price`) VALUES
+	(1, NULL, 1, 1, NULL, 'B3012USH', '2024-06-18', '08:48:47', 'IN', 'Cash', 0),
+	(2, NULL, 1, 1, NULL, 'B3012USH', '2024-06-18', '08:48:49', 'OUT', 'Cash', 0),
+	(3, 3084857, NULL, 1, NULL, '', '2024-06-26', '14:09:36', 'OUT', 'Cash', 990000),
+	(4, 4084902, NULL, 1, NULL, '', '2024-06-26', '14:10:06', 'OUT', 'Cash', 594000),
+	(5, 5135350, NULL, 1, NULL, '', '2024-06-26', '14:10:22', 'OUT', 'Cash', 3000),
+	(6, 6135602, NULL, 1, NULL, '', '2024-06-26', '14:11:05', 'OUT', 'Cash', 3000),
+	(7, 7135816, NULL, 1, NULL, 'B832ras', '2024-06-26', '13:58:16', 'IN', 'Cash', 3000),
+	(8, 8135828, NULL, 1, NULL, '', '2024-06-26', '13:58:28', 'IN', 'Cash', 3000),
+	(9, 9135841, NULL, 1, NULL, '', '2024-06-26', '13:58:41', 'IN', 'Cash', 3000),
+	(10, 10140049, NULL, 1, NULL, '', '2024-06-26', '14:01:02', 'OUT', 'Cash', 3000),
+	(11, 11140335, NULL, 1, NULL, '', '2024-06-26', '14:03:38', 'OUT', 'Cash', 3000),
+	(12, 12140604, NULL, 1, NULL, '', '2024-06-26', '14:06:07', 'OUT', 'Cash', 3000),
+	(13, 13140750, NULL, 1, NULL, '', '2024-06-26', '14:07:53', 'OUT', 'Cash', 5000),
+	(14, 14140902, NULL, 1, NULL, '', '2024-06-26', '14:09:15', 'OUT', 'Cash', 3000),
+	(15, 15141214, NULL, 1, NULL, '', '2024-06-26', '14:12:18', 'OUT', 'Cash', 5000),
+	(16, 16141357, NULL, 1, NULL, '', '2024-06-26', '14:14:01', 'OUT', 'Cash', 3000),
+	(17, 17141722, NULL, 1, 'Mobil', '', '2024-06-26', '14:17:25', 'OUT', 'Cash', 5000),
+	(18, 18142733, NULL, 1, 'Mobil', '', '2024-06-26', '14:27:37', 'OUT', 'Cash', 5000),
+	(19, 19142830, NULL, 1, 'Sepeda Motor', '', '2024-06-26', '14:28:33', 'OUT', 'Cash', 3000),
+	(20, 20142859, NULL, 1, 'Sepeda Motor', '', '2024-06-26', '14:29:02', 'OUT', 'Cash', 3000),
+	(21, 21143918, NULL, 1, 'Sepeda Motor', '', '2024-06-26', '14:39:20', 'OUT', 'Cash', 3000),
+	(22, 22145404, NULL, 1, 'Sepeda Motor', '', '2024-06-26', '14:54:07', 'OUT', 'Cash', 3000),
+	(23, 23145412, NULL, 1, 'Sepeda Motor', 'asd', '2024-06-26', '14:54:17', 'OUT', 'Cash', 3000),
+	(24, 24145553, NULL, 1, 'Sepeda Motor', 'sadwa', '2024-06-26', '14:55:56', 'OUT', 'Cash', 3000),
+	(25, 25145608, NULL, 1, 'Mobil', 'asda', '2024-06-26', '14:56:50', 'OUT', 'Cash', 5000),
+	(26, 26145827, NULL, 1, 'Mobil', '', '2024-06-26', '14:58:35', 'OUT', 'Cash', 5000),
+	(27, 27145856, NULL, 1, 'Mobil', 'asa', '2024-06-26', '14:59:01', 'OUT', 'Cash', 5000),
+	(28, 28150453, NULL, 1, 'Sepeda Motor', 'asw', '2024-06-26', '15:05:00', 'OUT', 'Cash', 3000),
+	(29, 29150701, NULL, 1, 'Sepeda Motor', '', '2024-06-26', '15:07:03', 'OUT', 'Cash', 3000),
+	(30, 30150921, NULL, 1, 'Sepeda Motor', '', '2024-06-26', '15:09:24', 'OUT', 'Cash', 3000);
 
 -- Dumping structure for table parkir.users
 CREATE TABLE IF NOT EXISTS `users` (

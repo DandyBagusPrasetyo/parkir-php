@@ -9,7 +9,7 @@ if (!isset($_SESSION['email'])) {
 $session_id = $_SESSION['id'];
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
-$allowed_pages = ['dashboard', 'reports', 'users', 'add_user', 'edit_user', 'members', 'add_member', 'edit_member', 'transactions', 'ticket_checkin'];
+$allowed_pages = ['dashboard', 'reports', 'users', 'add_user', 'edit_user', 'members', 'add_member', 'edit_member', 'transactions', 'ticket_checkin', 'print_nota'];
 
 $page = explode('&', $page)[0];
 if (in_array($page, $allowed_pages)) {
