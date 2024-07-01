@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
+
 session_start();
 
 if (!isset($_SESSION['email'])) {
@@ -42,6 +44,7 @@ if (in_array($page, $allowed_pages)) {
     <!-- Custom styles for this template-->
     <link href="../assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="../assets/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 </head>
 
@@ -176,6 +179,17 @@ if (in_array($page, $allowed_pages)) {
                                     </div>
                                 </form>
                             </div>
+                        </li>
+
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <!-- <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-envelope fa-fw"></i>
+                            </a> -->
+                            <p class="pt-3" style="font-size: 10px;">
+                                Date: <span id="currentDate"></span><br>
+                                Time: <span id="currentTime"></span>
+                            </p>
                         </li>
 
                         <!-- Nav Item - Alerts -->
@@ -396,6 +410,7 @@ if (in_array($page, $allowed_pages)) {
 
     <!-- Core plugin JavaScript-->
     <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="../assets/js/sb-admin-2.min.js"></script>
@@ -415,6 +430,80 @@ if (in_array($page, $allowed_pages)) {
     <script>
         $(document).ready(function() {
             $('#membersTable').DataTable();
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#card_code').select2({
+                placeholder: 'Select a Member Card',
+                allowClear: true
+            });
+        });
+    </script>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+
+            $('#currentDate').text(date);
+            $('#currentTime').text(time);
+        }
+
+        $(document).ready(function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+
+    <!-- Dashboard.php -->
+    <script>
+        $(document).ready(function () {
+            $("#checkin_form").submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "dashboard.php",
+                    data: $(this).serialize() + '&ajax=1',
+                    success: function (response) {
+                        $("#checkin_notification").html(response);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#checkout_form").submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "dashboard.php",
+                    data: $(this).serialize() + '&ajax=1',
+                    success: function (response) {
+                        $("#checkout_notification").html(response);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#member_form").submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "dashboard.php",
+                    data: $(this).serialize() + '&ajax=1',
+                    success: function (response) {
+                        $("#member_notification").html(response);
+                    }
+                });
+            });
         });
     </script>
 
