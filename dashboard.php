@@ -17,6 +17,7 @@ $notification_checkout = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $card_code = isset($_POST['card_code']) ? $_POST['card_code'] : null;
     $ticket_number = isset($_POST['ticket_number']) ? $_POST['ticket_number'] : null;
+    $session_id = isset($_POST['session_id']) ? $_POST['session_id'] : '';
 
     if($card_code) {
         $sql = "SELECT * FROM members WHERE card_code = ?";

@@ -466,7 +466,7 @@ if (in_array($page, $allowed_pages)) {
                 $.ajax({
                     type: "POST",
                     url: "dashboard.php",
-                    data: $(this).serialize() + '&ajax=1',
+                    data: $(this).serialize() + '&ajax=1' + '&session_id=<?php echo $session_id; ?>',
                     success: function (response) {
                         $("#checkin_notification").html(response);
                     }
@@ -482,7 +482,7 @@ if (in_array($page, $allowed_pages)) {
                 $.ajax({
                     type: "POST",
                     url: "dashboard.php",
-                    data: $(this).serialize() + '&ajax=1',
+                    data: $(this).serialize() + '&ajax=1' + '&session_id=<?php echo $session_id; ?>',
                     success: function (response) {
                         $("#checkout_notification").html(response);
                     }
@@ -498,7 +498,7 @@ if (in_array($page, $allowed_pages)) {
                 $.ajax({
                     type: "POST",
                     url: "dashboard.php",
-                    data: $(this).serialize() + '&ajax=1',
+                    data: $(this).serialize() + '&ajax=1' + '&session_id=<?php echo $session_id; ?>',
                     success: function (response) {
                         $("#member_notification").html(response);
                     }
