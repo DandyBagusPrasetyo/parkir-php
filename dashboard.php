@@ -1,5 +1,14 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
+
 require_once 'koneksi.php';
+
+$sql = "SELECT id, card_code, name FROM members";
+$result = $konek->query($sql);
+$members = [];
+while ($row = $result->fetch_assoc()) {
+    $members[] = $row;
+}
 
 $notification_member = '';
 $notification_checkin = '';
@@ -57,6 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $notification = "Member not found.";
         }
+
+        $response = $notification;
+        if (isset($_POST['ajax']) && $_POST['ajax'] == 1) {
+            echo $response;
+            exit();
+        }
+
         $konek->close();
     } elseif ($ticket_number) {
         $vehicle_number = isset($_POST['vehicle_number']) ? $_POST['vehicle_number'] : null;
@@ -136,6 +152,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $notification_checkout = "Transaction with Ticket No: $ticket_number not found or already checked out.";
         }
 
+        $response_checkin = $notification_checkout;
+
+        if (isset($_POST['ajax']) && $_POST['ajax'] == 1) {
+            echo $response_checkin;
+            exit();
+        }
+
         $konek->close();
     } else {
         $vehicle_number = isset($_POST['vehicle_number']) ? $_POST['vehicle_number'] : null;
@@ -192,20 +215,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $notification_checkin = "Error: " . $stmt->error;
         }
 
+        $response_checkin = $notification_checkin;
+
+        if (isset($_POST['ajax']) && $_POST['ajax'] == 1) {
+            echo $response_checkin;
+            exit();
+        }
+
         $stmt->close();
         $konek->close();
     }
 }
 ?>
 <div>
-<div class="row">
+    <div class="row">
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Check IN (Non Member)</h6>
                 </div>
                 <div class="card-body">
-                    <form action="index.php?page=dashboard" method="POST">
+                    <form id="checkin_form" action="index.php?page=dashboard" method="POST">
                         <div class="form-group">
                             <label for="vehicle_number">Vehicle Number/Plat Kendaraan (Opsional)</label>
                             <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
@@ -220,11 +250,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <button type="submit" class="btn btn-primary">Create Ticket</button>
                     </form>
                 </div>
-                <?php if ($notification_checkin): ?>
                 <div class="card-footer">
-                    <p><?php echo $notification_checkin; ?></p>
+                    <p id="checkin_notification"></p>
                 </div>
-                <?php endif; ?>
             </div>
         </div>
         <div class="col-lg-6">
@@ -233,7 +261,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h6 class="m-0 font-weight-bold text-primary">Check OUT (Non Member)</h6>
                 </div>
                 <div class="card-body">
-                    <form action="index.php?page=dashboard" method="POST">
+                    <form id="checkout_form" action="index.php?page=dashboard" method="POST">
                         <div class="form-group">
                             <label for="ticket_number">Ticket No</label>
                             <input type="text" class="form-control" id="ticket_number" name="ticket_number" required>
@@ -245,11 +273,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <button type="submit" class="btn btn-primary">Check Out</button>
                     </form>
                 </div>
-                <?php if ($notification_checkout): ?>
                 <div class="card-footer">
-                    <p><?php echo $notification_checkout; ?></p>
+                    <p id="checkout_notification"></p>
                 </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -257,26 +283,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-lg-4">
         </div>
         <div class="col-lg-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Check IN/OUT (Member Card)</h6>
-                    </div>
-                    <div class="card-body">
-                        <form action="index.php?page=dashboard" method="POST">
-                            <div class="form-group">
-                                <label for="card_code">Card Code</label>
-                                <input type="text" class="form-control" id="card_code" name="card_code" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Check IN/OUT</button>
-                        </form>
-                    </div>
-                    <?php if (isset($notification)): ?>
-                    <div class="card-footer">
-                        <p><?php echo $notification; ?></p>
-                    </div>
-                    <?php endif; ?>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Check IN/OUT (Member Card)</h6>
+                </div>
+                <div class="card-body">
+                    <form id="member_form" action="index.php?page=dashboard" method="POST">
+                        <div class="form-group">
+                            <label for="card_code">Card Code</label>
+                            <select class="form-control" id="card_code" name="card_code" required>
+                                <option value="">Select Member Card</option>
+                                <?php foreach ($members as $member): ?>
+                                    <option value="<?php echo $member['card_code']; ?>">
+                                        <?php echo $member['card_code'] . ' - ' . $member['name']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Check IN/OUT</button>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <p id="member_notification"></p>
                 </div>
             </div>
+        </div>
         <div class="col-lg-4">
         </div>
     </div>

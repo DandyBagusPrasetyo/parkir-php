@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $vehicle_number = $_POST['vehicle_number'];
     $card_code = generateCardCode($vehicle_type, $vehicle_number);
 
-    // Insert data into members table
     $sql = "INSERT INTO members (name, phone, address, vehicle_type, vehicle_model, vehicle_color, vehicle_number, card_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $konek->prepare($sql);
     $stmt->bind_param("ssssssss", $name, $phone, $address, $vehicle_type, $vehicle_model, $vehicle_color, $vehicle_number, $card_code);
@@ -73,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label for="vehicle_number">Vehicle number</label>
                             <input type="vehicle_number" class="form-control" id="vehicle_number" name="vehicle_number" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Add User</button>
+                        <button type="submit" class="btn btn-primary">Add Member</button>
                     </form>
                 </div>
             </div>
